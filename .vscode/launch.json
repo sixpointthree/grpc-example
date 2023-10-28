@@ -1,0 +1,26 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C++ Debug",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/HelloWorld", // Pfad zur ausführbaren Datei des Debug-Builds
+      "args": [], // Argumente, die an das Programm übergeben werden können
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "preLaunchTask": "build Debug", // Dieses Build-Task-Kennwort muss mit dem Namen des in tasks.json definierten Build-Task übereinstimmen
+      "miDebuggerPath": "/usr/bin/gdb" // Pfad zum gdb-Debugger (gdb sollte im Dev Container installiert sein)
+    }
+  ]
+}
