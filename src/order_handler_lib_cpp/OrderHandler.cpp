@@ -22,3 +22,7 @@ bool OrderHandler::createOrder(OrderId orderId, bool autostart) {
 
   return true;
 }
+
+void OrderHandler::setOrderStateListener(std::function<void(OrderId, OrderState)> listener) {
+  m_listener = listener;
+}
