@@ -6,9 +6,9 @@ set(SOURCES
   main.cpp
 )
 
-set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../order_handler_lib_cpp/build)
+set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../order_handler_lib_cpp)
 
-find_package(OrderHandler 1.0 REQUIRED)
+find_package(OrderHandler REQUIRED)
 
 message(OrderHandler_INCLUDE_DIRS ${OrderHandler_INCLUDE_DIRS})
 message(OrderHandler_LIBRARIES ${OrderHandler_LIBRARIES})
