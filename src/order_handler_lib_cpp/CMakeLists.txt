@@ -61,6 +61,29 @@ message(STATUS "hw_proto_hdrs: ${hw_proto_hdrs}")
 message(STATUS "hw_grpc_srcs: ${hw_grpc_srcs}")
 message(STATUS "hw_grpc_hdrs: ${hw_grpc_hdrs}")
 
+# Erzeugen Sie eine benutzerdefinierte CMake-Funktion, um Protobuf und gRPC-Dateien zu generieren.
+function(generate_protobuf_files proto_file proto_file_path output_dir)
+    # Überprüfen Sie, ob das Protobuf-Datei vorhanden ist
+    if (NOT EXISTS ${proto_file})
+        message(FATAL_ERROR "Protobuf file ${proto_file} does not exist.")
+    endif()
+
+    # Fügen Sie Ihre Protobuf- und gRPC-Generierungsschritte hier ein
+    execute_process(
+        COMMAND ${_PROTOBUF_PROTOC} --grpc_out=${output_dir} --cpp_out=${output_dir} --proto_path=${proto_file_path} --plugin=protoc-gen-grpc=${_GRPC_CPP_PLUGIN_EXECUTABLE} ${proto_file}
+        RESULT_VARIABLE protoc_result
+    )
+
+    if (protoc_result)
+        message(FATAL_ERROR "Protobuf/gRPC generation failed with code ${protoc_result}")
+    endif()
+endfunction()
+
+
+# Verwenden Sie die benutzerdefinierte CMake-Funktion, um Protobuf- und gRPC-Dateien zu generieren.
+generate_protobuf_files(${hw_proto} ${hw_proto_path} ${CMAKE_CURRENT_BINARY_DIR})
+
+
 # Create the shared library
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
 
