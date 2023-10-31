@@ -5,15 +5,22 @@ cmake_minimum_required(VERSION 3.10)
 project(OrderHandler)
 
 # Set the source files for the library
-set(SOURCES
+set(HEADERS
   IOrderHandler.h
   OrderHandler.h
-  OrderHandler.cpp
   OrderState.h
 )
 
+set(SOURCES
+  OrderHandler.cpp
+)
+
 # Create the shared library
-add_library(${PROJECT_NAME} SHARED ${SOURCES})
+add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
 
 # Set the include directories for the library
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+# Install the library and headers
+install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/lib)
+install(FILES ${HEADERS} DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/include)

@@ -6,15 +6,14 @@ set(SOURCES
   main.cpp
 )
 
-set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../order_handler_lib_cpp)
-
-find_package(OrderHandler REQUIRED)
-
-message(OrderHandler_INCLUDE_DIRS ${OrderHandler_INCLUDE_DIRS})
-message(OrderHandler_LIBRARIES ${OrderHandler_LIBRARIES})
-
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-target_link_libraries(${PROJECT_NAME} private
-  OrderHandler::OrderHandler
+add_library(libOrderHandler SHARED IMPORTED GLOBAL ${SOURCES})
+set_target_properties(libOrderHandler PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/../order_handler_lib_cpp/lib/libOrderHandler.so)
+
+# Setze den Include-Pfad für die Header-Dateien der libOrderHandler
+target_include_directories(libOrderHandler INTERFACE
+  ${CMAKE_CURRENT_SOURCE_DIR}/../order_handler_lib_cpp/include
 )
+
+target_link_libraries(${PROJECT_NAME} libOrderHandler)
