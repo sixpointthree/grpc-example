@@ -9,5 +9,13 @@
 			},
 			"command": "cmake .. -DCMAKE_BUILD_TYPE=Debug && cmake --build .",
 		},
+		{
+			"label": "order_terminal_cpp Debug build",
+			"type": "shell",
+			"options": {
+					"cwd": "${workspaceFolder}/src/order_terminal_cpp/build"
+			},
+			"command": "cmake .. -DCMAKE_BUILD_TYPE=Debug && cmake --build .",
+		}
 	]
 }

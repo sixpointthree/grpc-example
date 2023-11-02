@@ -6,10 +6,11 @@
 
 class IOrderHandler {
 public:
+  using ItemId = int32_t;
   using OrderId = int32_t;
 
   virtual ~IOrderHandler() = default;
 
-  virtual bool createOrder(OrderId orderId, bool autostart = true) = 0;
+  virtual std::pair<bool, OrderId> createOrder(ItemId itemId, bool autostart = true) = 0;
   virtual void setOrderStateListener(std::function<void(OrderId, OrderState)> listener) = 0;
 };

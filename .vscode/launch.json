@@ -2,10 +2,31 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "order_terminal_cpp Debug",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/order_terminal_cpp/build/OrderTerminal", // Pfad zur ausführbaren Datei des Debug-Builds
+      "args": [], // Argumente, die an das Programm übergeben werden können
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "preLaunchTask": "order_terminal_cpp Debug build", // Dieses Build-Task-Kennwort muss mit dem Namen des in tasks.json definierten Build-Task übereinstimmen
+      "miDebuggerPath": "/usr/bin/gdb" // Pfad zum gdb-Debugger (gdb sollte im Dev Container installiert sein)
+    },
+    {
       "name": "bar_cpp Debug",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/src/bar_cpp/build/HelloWorld", // Pfad zur ausführbaren Datei des Debug-Builds
+      "program": "${workspaceFolder}/src/bar_cpp/build/Bar", // Pfad zur ausführbaren Datei des Debug-Builds
       "args": [], // Argumente, die an das Programm übergeben werden können
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",

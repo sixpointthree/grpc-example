@@ -1,8 +1,10 @@
 #include "OrderHandler.h"
+//#include "OrderService.h"
 
 #include <thread>
 
-bool OrderHandler::createOrder(OrderId orderId, bool autostart) {
+std::pair<bool, IOrderHandler::OrderId> OrderHandler::createOrder(ItemId itemId, bool autostart) {
+  OrderId orderId = m_currOrderIdCounter++; 
   m_orders[orderId] = OrderState::Created;
   if (autostart) {
     m_orders[orderId] = OrderState::InProduction;
@@ -20,7 +22,7 @@ bool OrderHandler::createOrder(OrderId orderId, bool autostart) {
     }
   }).detach();
 
-  return true;
+  return {true, orderId};
 }
 
 void OrderHandler::setOrderStateListener(std::function<void(OrderId, OrderState)> listener) {
