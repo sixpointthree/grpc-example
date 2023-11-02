@@ -3,45 +3,69 @@
 #include "build/orderservice.pb.h"
 #include "build/orderservice.grpc.pb.h"
 #include <iostream>
+#include <chrono>
 #include <thread>
 
-void RunClient()
-{
+void CreateOrder(orderservice::OrderService::Stub* stub) {
+  orderservice::CreateOrderRequest request;
+  request.set_item_id(1);
+  request.set_autostart(true);
+
+  orderservice::CreateOrderResponse response;
+
+  grpc::ClientContext context;
+  grpc::Status status = stub->CreateOrder(&context, request, &response);
+
+  if (status.ok() && response.success()) {
+    std::cout << "Order created with id: " << response.order_id() << std::endl;
+  } else {
+    std::cout << "Order creation failed" << std::endl;
+  }
+}
+
+void RunClient() {
   std::string server_address("localhost:50051");
-
-  // connect to grpc server
   std::shared_ptr<grpc::Channel> channel = grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials());
-
-  // create stub
   std::unique_ptr<orderservice::OrderService::Stub> stub = orderservice::OrderService::NewStub(channel);
 
-  while (1) {
-    // create request
-    orderservice::CreateOrderRequest request;
-    request.set_item_id(1);
-    request.set_autostart(true);
+  // Flag, um zu überprüfen, ob eine neue Bestellung erstellt werden kann
+  bool canCreateOrder = false;
 
-    // create response
-    orderservice::CreateOrderResponse response;
-
-    // call rpc
+  // Worker-Thread, um den Stream zu empfangen und Bestellungen zu erstellen
+  std::thread orderStateChangedRcvThread([&]() {
+    std::cout << "Start listening for order state changes" << std::endl;
     grpc::ClientContext context;
-    grpc::Status status = stub->CreateOrder(&context, request, &response);
+    orderservice::OrderStateChangedSubscribeRequest subReq;
+    std::unique_ptr<grpc::ClientReader<orderservice::OrderStateChangedUpdate>> clientReader = stub->OrderStateChanged(&context, subReq);
 
-    // check response
-    if (status.ok()) {
-      if (response.success()) {
-        std::cout << "Order created " << response.order_id() << std::endl;
-      } else {
-        std::cout << "Order creation failed: Server response indicates failure" << std::endl;
+    while (true) {
+      orderservice::OrderStateChangedUpdate update;
+      if (!clientReader->Read(&update)) {
+        // Wenn der Stream geschlossen ist, den Worker-Thread beenden
+        break;
+      }
+
+      std::cout << "Order state changed: " << update.order_id() << " " << update.state() << std::endl;
+
+      if (update.state() == orderservice::OrderState::Completed) {
+        std::cout << "Order completed. Free for a new order request" << std::endl;
+        canCreateOrder = true;
       }
     }
-    else {
-      std::cout << "Order creation failed: gRPC status code = " << status.error_code()
-                << ", error message = " << status.error_message() << std::endl;
-    }
+    std::cout << "Stop listening for order state changes" << std::endl;
+  });
 
-    // sleep
-    std::this_thread::sleep_for(std::chrono::seconds(20));
+  // Haupt-Thread, um Bestellungen zu erstellen
+  CreateOrder(stub.get());
+
+  while (true) {
+    if (canCreateOrder) {
+      std::cout << "Creating new order" << std::endl;
+      CreateOrder(stub.get());  // Erstellen Sie eine neue Bestellung
+      canCreateOrder = false;   // Zurücksetzen des Flags
+    }
   }
+
+  // Warten, bis der Worker-Thread beendet ist
+  orderStateChangedRcvThread.join();
 }

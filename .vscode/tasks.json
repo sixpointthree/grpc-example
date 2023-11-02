@@ -2,6 +2,14 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
+			"label": "order_handler_lib_cpp Debug build",
+			"type": "shell",
+			"options": {
+					"cwd": "${workspaceFolder}/src/order_handler_lib_cpp/build"
+			},
+			"command": "cmake .. -DCMAKE_BUILD_TYPE=Debug && cmake --build . -j11 && cmake --install .",
+		},
+		{
 			"label": "bar_cpp Debug build",
 			"type": "shell",
 			"options": {

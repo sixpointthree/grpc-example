@@ -20,7 +20,16 @@
         }
       ],
       "preLaunchTask": "order_terminal_cpp Debug build", // Dieses Build-Task-Kennwort muss mit dem Namen des in tasks.json definierten Build-Task übereinstimmen
-      "miDebuggerPath": "/usr/bin/gdb" // Pfad zum gdb-Debugger (gdb sollte im Dev Container installiert sein)
+      "miDebuggerPath": "/usr/bin/gdb", // Pfad zum gdb-Debugger (gdb sollte im Dev Container installiert sein)
+      "linux": {
+        "MIMode": "gdb",
+        "setupCommands": [
+          {
+            "description": "Load shared library symbols",
+            "text": "sharedlibrary libOrderService.so"
+          }
+        ]
+      }
     },
     {
       "name": "bar_cpp Debug",
@@ -41,7 +50,16 @@
         }
       ],
       "preLaunchTask": "bar_cpp Debug build", // Dieses Build-Task-Kennwort muss mit dem Namen des in tasks.json definierten Build-Task übereinstimmen
-      "miDebuggerPath": "/usr/bin/gdb" // Pfad zum gdb-Debugger (gdb sollte im Dev Container installiert sein)
+      "miDebuggerPath": "/usr/bin/gdb", // Pfad zum gdb-Debugger (gdb sollte im Dev Container installiert sein)
+      "linux": {
+        "MIMode": "gdb",
+        "setupCommands": [
+          {
+            "description": "Load shared library symbols",
+            "text": "sharedlibrary ${workspaceFolder}/src/order_handler_lib_cpp/build/libOrderService.so"
+          }
+        ]
+      }
     }
   ]
 }

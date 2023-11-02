@@ -4,6 +4,7 @@ package orderservice;
 
 service OrderService {
   rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse);
+  rpc OrderStateChanged(OrderStateChangedSubscribeRequest) returns (stream OrderStateChangedUpdate);
 }
 
 message CreateOrderRequest {
@@ -14,4 +15,17 @@ message CreateOrderRequest {
 message CreateOrderResponse {
   bool success = 1;
   int32 order_id = 2;
+}
+
+message OrderStateChangedSubscribeRequest {}
+
+message OrderStateChangedUpdate {
+  int32 order_id = 1;
+  OrderState state = 2;
+}
+
+enum OrderState {
+  Created = 0;
+  InProduction = 1;
+  Completed = 2;
 }

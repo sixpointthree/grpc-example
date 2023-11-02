@@ -3,6 +3,8 @@
 #include "IOrderHandler.h"
 #include "OrderServiceImpl.h"
 
+class IOrderHandler;
+
 void RunServer(std::shared_ptr<IOrderHandler> handler)
 {
   std::string server_address("0.0.0.0:50051");

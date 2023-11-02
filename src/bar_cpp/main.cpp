@@ -6,12 +6,6 @@
 
 int main()
 {
-    std::shared_ptr<IOrderHandler> orderHandler = std::make_shared<OrderHandler>();
-    orderHandler->setOrderStateListener([](IOrderHandler::OrderId orderId, OrderState orderState) {
-        std::cout << "Order " << orderId << " changed state to " << std::to_string(static_cast<int>(orderState)) << std::endl;
-    });
-    RunServer(orderHandler);
-    orderHandler->createOrder(1, true);
-    std::this_thread::sleep_for(std::chrono::seconds(20));
+    RunServer(std::make_shared<OrderHandler>());
     return 0;
 }
