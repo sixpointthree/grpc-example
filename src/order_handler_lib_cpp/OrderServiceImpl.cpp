@@ -15,9 +15,13 @@ grpc::Status OrderServiceImpl::CreateOrder(grpc::ServerContext* context, const o
 
 grpc::Status OrderServiceImpl::OrderStateChanged(grpc::ServerContext* context, const orderservice::OrderStateChangedSubscribeRequest* request,
                                  grpc::ServerWriter<orderservice::OrderStateChangedUpdate>* writer) {
-  std::cout << "OrderStateChangedSubscribe called" << std::endl;
-
+  
+  // OrderStateChanged muss die Aktualisierungen an den Client senden, bis der Client die Verbindung trennt oder die Anforderung abbricht.
+  // Es ist nicht möglich den writer nach Beendigung dieser Methode zu verwenden, also kann der writer auch keinem lambda übergeben werden.
+  
+  // Prüfen, ob der Client die Verbindung getrennt hat
   while (!context->IsCancelled()) {
+    // Warten Sie auf eine Änderung des Bestellstatus
     auto [orderId, orderState] = m_orderHandler->waitForOrderStateChange();
 
     orderservice::OrderStateChangedUpdate update;
@@ -29,6 +33,5 @@ grpc::Status OrderServiceImpl::OrderStateChanged(grpc::ServerContext* context, c
       break; // Wenn das Schreiben fehlschlägt, brechen Sie die Schleife ab
     }
   }
-  std::cout << "OrderStateChangedSubscribe ended" << std::endl;
-  return grpc::Status::OK;
+  return grpc::Status::OK;  // Wenn die Schleife beendet wird, geben Sie OK zurück.
 }

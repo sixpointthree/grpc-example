@@ -30,6 +30,7 @@ void RunClient() {
 
   // Flag, um zu überprüfen, ob eine neue Bestellung erstellt werden kann
   bool canCreateOrder = false;
+  std::mutex canCreateOrderMutex;
 
   // Worker-Thread, um den Stream zu empfangen und Bestellungen zu erstellen
   std::thread orderStateChangedRcvThread([&]() {
@@ -49,7 +50,10 @@ void RunClient() {
 
       if (update.state() == orderservice::OrderState::Completed) {
         std::cout << "Order completed. Free for a new order request" << std::endl;
-        canCreateOrder = true;
+        {
+          std::lock_guard<std::mutex> lock(canCreateOrderMutex);
+          canCreateOrder = true;
+        }
       }
     }
     std::cout << "Stop listening for order state changes" << std::endl;
@@ -59,6 +63,7 @@ void RunClient() {
   CreateOrder(stub.get());
 
   while (true) {
+    std::lock_guard<std::mutex> lock(canCreateOrderMutex);
     if (canCreateOrder) {
       std::cout << "Creating new order" << std::endl;
       CreateOrder(stub.get());  // Erstellen Sie eine neue Bestellung

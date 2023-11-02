@@ -11,19 +11,23 @@ std::pair<bool, IOrderHandler::OrderId> OrderHandler::createOrder(ItemId itemId,
   if (autostart)
   {
     std::thread([=]
-                { 
-        std::unique_lock<std::mutex> lock(m_mutex);
-        std::this_thread::sleep_for(std::chrono::seconds(3));
-        m_orders[orderId] = OrderState::InProduction;
+                {
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        {
+          std::unique_lock<std::mutex> lock(m_mutex);
+          m_orders[orderId] = OrderState::InProduction;
+        }
         std::cout << __PRETTY_FUNCTION__ << "Order(" << orderId << ") changed to InProduction" << std::endl;
         m_cv.notify_all(); })
         .detach();
   }
   std::thread([=]
               { 
-      std::unique_lock<std::mutex> lock(m_mutex);
-      std::this_thread::sleep_for(std::chrono::seconds(20));      
-      m_orders[orderId] = OrderState::Completed;
+      std::this_thread::sleep_for(std::chrono::seconds(10));      
+      {
+        std::unique_lock<std::mutex> lock(m_mutex);
+        m_orders[orderId] = OrderState::Completed;
+      }
       std::cout << __PRETTY_FUNCTION__ << "Order(" << orderId << ") changed to Completed" << std::endl;
       m_cv.notify_all(); })
       .detach();
@@ -40,10 +44,11 @@ std::pair<IOrderHandler::OrderId, OrderState> OrderHandler::waitForOrderStateCha
   const auto it = m_orders.rbegin();
   IOrderHandler::OrderId orderId = it->first;
   OrderState state = it->second;
-  std::cout << __PRETTY_FUNCTION__ << " " << orderId << " " << static_cast<int>(state) << std::endl;
+  std::cout << __PRETTY_FUNCTION__ << "Order(" << orderId << ") changed to " << static_cast<int>(state) << std::endl;
   return {orderId, state};
 }
 
+// NICHT verwendbar für Aktualisierungen an den Client, weil der context nicht übergeben werden kann
 void OrderHandler::setOrderStateListener(std::function<void(OrderId, OrderState)> listener)
 {
   // use m_mutex:
