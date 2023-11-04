@@ -4,4 +4,6 @@
 
 class IOrderHandler;
 
-void RunServer(std::shared_ptr<IOrderHandler> handler);
+namespace order {
+  void RunServer(std::shared_ptr<IOrderHandler> handler);
+} // namespace order

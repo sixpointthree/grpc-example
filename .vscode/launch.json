@@ -57,6 +57,10 @@
           {
             "description": "Load shared library symbols",
             "text": "sharedlibrary ${workspaceFolder}/src/order_handler_lib_cpp/build/libOrderService.so"
+          },
+          {
+            "description": "Load shared library symbols",
+            "text": "sharedlibrary ${workspaceFolder}/src/auth_service_lib_cpp/build/libAuthService.so"
           }
         ]
       }

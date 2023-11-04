@@ -7,7 +7,15 @@
 			"options": {
 					"cwd": "${workspaceFolder}/src/order_handler_lib_cpp/build"
 			},
-			"command": "cmake .. -DCMAKE_BUILD_TYPE=Debug && cmake --build . -j11 && cmake --install .",
+			"command": "cmake .. -DCMAKE_BUILD_TYPE=Debug && cmake --build . -v -j11 && cmake --install .",
+		},
+		{
+			"label": "auth_service_lib_cpp Debug build",
+			"type": "shell",
+			"options": {
+					"cwd": "${workspaceFolder}/src/auth_service_lib_cpp/build"
+			},
+			"command": "cmake .. -DCMAKE_BUILD_TYPE=Debug && cmake --build . -v -j11 && cmake --install .",
 		},
 		{
 			"label": "bar_cpp Debug build",
@@ -15,7 +23,7 @@
 			"options": {
 					"cwd": "${workspaceFolder}/src/bar_cpp/build"
 			},
-			"command": "cmake .. -DCMAKE_BUILD_TYPE=Debug && cmake --build .",
+			"command": "cmake .. -DCMAKE_BUILD_TYPE=Debug && cmake --build . -v",
 		},
 		{
 			"label": "order_terminal_cpp Debug build",
@@ -23,7 +31,7 @@
 			"options": {
 					"cwd": "${workspaceFolder}/src/order_terminal_cpp/build"
 			},
-			"command": "cmake .. -DCMAKE_BUILD_TYPE=Debug && cmake --build .",
+			"command": "cmake .. -DCMAKE_BUILD_TYPE=Debug && cmake --build . -v",
 		}
 	]
 }

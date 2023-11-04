@@ -5,6 +5,7 @@
 
 class IOrderHandler;
 
+namespace order {
 void RunServer(std::shared_ptr<IOrderHandler> handler)
 {
   std::string server_address("0.0.0.0:50051");
@@ -17,3 +18,4 @@ void RunServer(std::shared_ptr<IOrderHandler> handler)
   std::unique_ptr<grpc::Server> server(builder.BuildAndStart());
   server->Wait();
 }
+} // namespace order
