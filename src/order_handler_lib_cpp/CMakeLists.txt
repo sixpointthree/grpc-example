@@ -74,8 +74,8 @@ endfunction()
 generate_protobuf_files(${orderservice_proto} ${orderservice_proto_path} ${CMAKE_CURRENT_BINARY_DIR})
 
 
-# Create the shared library
-add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES} ${orderservice_proto_srcs} ${orderservice_proto_hdrs} ${orderservice_grpc_srcs} ${orderservice_grpc_hdrs})
+# Create the static library
+add_library(${PROJECT_NAME} STATIC ${HEADERS} ${SOURCES} ${orderservice_proto_srcs} ${orderservice_proto_hdrs} ${orderservice_grpc_srcs} ${orderservice_grpc_hdrs})
 
 # Set the include directories for the library
 include_directories(${gRPC_DIR_INCLUDE})

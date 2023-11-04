@@ -71,8 +71,8 @@ endfunction()
 generate_protobuf_files(${auth_proto} ${auth_proto_path} ${CMAKE_CURRENT_BINARY_DIR})
 
 
-# Create the shared library
-add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES} ${auth_proto_srcs} ${auth_proto_hdrs} ${auth_grpc_srcs} ${auth_grpc_hdrs})
+# Create the static library
+add_library(${PROJECT_NAME} STATIC ${HEADERS} ${SOURCES} ${auth_proto_srcs} ${auth_proto_hdrs} ${auth_grpc_srcs} ${auth_grpc_hdrs})
 
 # Set the include directories for the library
 include_directories(${gRPC_DIR_INCLUDE})
