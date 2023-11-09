@@ -11,12 +11,10 @@ set(HEADERS
   OrderState.h
   OrderServiceImpl.h
   RunServer.h
-  RunClient.h
 )
 
 set(SOURCES
   OrderHandler.cpp
-  RunClient.cpp
   RunServer.cpp
   OrderServiceImpl.cpp
 )
@@ -37,6 +35,7 @@ set(orderservice_proto_srcs "${CMAKE_CURRENT_BINARY_DIR}/orderservice.pb.cc")
 set(orderservice_proto_hdrs "${CMAKE_CURRENT_BINARY_DIR}/orderservice.pb.h")
 set(orderservice_grpc_srcs "${CMAKE_CURRENT_BINARY_DIR}/orderservice.grpc.pb.cc")
 set(orderservice_grpc_hdrs "${CMAKE_CURRENT_BINARY_DIR}/orderservice.grpc.pb.h")
+set(GENERATED_PROTOBUF_FILES ${orderservice_proto_srcs} ${orderservice_proto_hdrs} ${orderservice_grpc_srcs} ${orderservice_grpc_hdrs})
 
 # debug the add_custom_command output
 message("=========================================")
@@ -73,6 +72,9 @@ endfunction()
 # Verwenden Sie die benutzerdefinierte CMake-Funktion, um Protobuf- und gRPC-Dateien zu generieren.
 generate_protobuf_files(${orderservice_proto} ${orderservice_proto_path} ${CMAKE_CURRENT_BINARY_DIR})
 
+# libAuthService einbinden
+#add_library(libAuthService STATIC IMPORTED GLOBAL ${SOURCES})
+#set_target_properties(libAuthService PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/../auth_service_lib_cpp/lib/libAuthService.a)
 
 # Create the static library
 add_library(${PROJECT_NAME} STATIC ${HEADERS} ${SOURCES} ${orderservice_proto_srcs} ${orderservice_proto_hdrs} ${orderservice_grpc_srcs} ${orderservice_grpc_hdrs})
@@ -81,9 +83,11 @@ add_library(${PROJECT_NAME} STATIC ${HEADERS} ${SOURCES} ${orderservice_proto_sr
 include_directories(${gRPC_DIR_INCLUDE})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+#target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}, ${CMAKE_CURRENT_SOURCE_DIR}/../auth_service_lib_cpp/include)
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+#target_link_libraries(${PROJECT_NAME} PUBLIC libAuthService gRPC::grpc++)
 target_link_libraries(${PROJECT_NAME} PUBLIC gRPC::grpc++)
 
 # Install the library and headers
 install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/lib)
-install(FILES ${HEADERS} DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/include)
+install(FILES ${HEADERS} ${GENERATED_PROTOBUF_FILES} DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/include)

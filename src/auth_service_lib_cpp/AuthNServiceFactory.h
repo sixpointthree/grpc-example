@@ -1,7 +1,8 @@
 #pragma once
 
 #include <memory>
-#include "IAuthNService.h"
+
+class IAuthNService;
 
 class AuthNServiceFactory
 {

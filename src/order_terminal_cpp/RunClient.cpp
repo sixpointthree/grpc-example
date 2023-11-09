@@ -1,7 +1,9 @@
 #include "RunClient.h"
 #include <grpcpp/grpcpp.h>
-#include "build/orderservice.pb.h"
-#include "build/orderservice.grpc.pb.h"
+#include <orderservice.pb.h>
+#include <orderservice.grpc.pb.h>
+#include <auth.pb.h>
+#include <auth.grpc.pb.h>
 #include <iostream>
 #include <chrono>
 #include <thread>
@@ -24,10 +26,31 @@ void CreateOrder(orderservice::OrderService::Stub* stub) {
 }
 
 void RunClient() {
-  std::string server_address("localhost:50051");
-  std::shared_ptr<grpc::Channel> channel = grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials());
-  std::unique_ptr<orderservice::OrderService::Stub> stub = orderservice::OrderService::NewStub(channel);
+  // Authentication first
+  std::shared_ptr<grpc::Channel> authChannel = grpc::CreateChannel("localhost:50052", grpc::InsecureChannelCredentials());
+  std::unique_ptr<auth::AuthService::Stub> authStub = auth::AuthService::NewStub(authChannel);
 
+  auth::Credentials credentials;
+  credentials.set_username("order-terminal");
+  credentials.set_password("mostsecurepasswordever");
+
+  auth::AccessToken token;
+
+  grpc::ClientContext context;
+  grpc::Status status = authStub->Login(&context, credentials, &token);
+
+  std::string tokenString = token.token();
+  std::cout << "Auth Token received: " << tokenString << std::endl;
+
+  std::shared_ptr<grpc::ChannelCredentials> channelCredentials = grpc::CompositeChannelCredentials(
+    grpc::InsecureChannelCredentials(),  // TODO: Replace with SSL/TLS credentials to achieve confidentiality
+    grpc::AccessTokenCredentials(tokenString)  // Client authentication with token to achieve authenticity
+    );
+
+  // Order service
+  std::string server_address("localhost:50051");
+  std::shared_ptr<grpc::Channel> channel = grpc::CreateChannel(server_address, channelCredentials);
+  std::unique_ptr<orderservice::OrderService::Stub> stub = orderservice::OrderService::NewStub(channel);
   // Flag, um zu überprüfen, ob eine neue Bestellung erstellt werden kann
   bool canCreateOrder = false;
   std::mutex canCreateOrderMutex;

@@ -8,14 +8,18 @@ project(AuthService)
 set(HEADERS
   IAuthNService.h
   AuthNService.h
-  AuthNServiceFactory.h
   RunAuthServer.h
+  AuthNServiceAuthMetadataProcessor.h
+  AuthNServiceFactory.h
+  AuthMetadataProcessorFactory.h
 )
 
 set(SOURCES
   AuthNService.cpp
-  AuthNServiceFactory.cpp
   RunAuthServer.cpp
+  AuthNServiceAuthMetadataProcessor.cpp
+  AuthNServiceFactory.cpp
+  AuthMetadataProcessorFactory.cpp
 )
 
 find_package(Protobuf CONFIG REQUIRED)
@@ -34,6 +38,7 @@ set(auth_proto_srcs "${CMAKE_CURRENT_BINARY_DIR}/auth.pb.cc")
 set(auth_proto_hdrs "${CMAKE_CURRENT_BINARY_DIR}/auth.pb.h")
 set(auth_grpc_srcs "${CMAKE_CURRENT_BINARY_DIR}/auth.grpc.pb.cc")
 set(auth_grpc_hdrs "${CMAKE_CURRENT_BINARY_DIR}/auth.grpc.pb.h")
+set(GENERATED_PROTOBUF_FILES "${auth_proto_srcs}" "${auth_proto_hdrs}" "${auth_grpc_srcs}" "${auth_grpc_hdrs}")
 
 # debug the add_custom_command output
 message("=========================================")
@@ -83,4 +88,4 @@ target_link_libraries(${PROJECT_NAME} PUBLIC gRPC::grpc++)
 
 # Install the library and headers
 install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/lib)
-install(FILES ${HEADERS} DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/include)
+install(FILES ${HEADERS} ${GENERATED_PROTOBUF_FILES} DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/include)

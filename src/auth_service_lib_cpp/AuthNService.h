@@ -7,14 +7,13 @@
 
 class AuthNService : public IAuthNService, public auth::AuthService::Service
 {
-
 public:
   AuthNService();
   ~AuthNService();
 
-  bool verify(std::string accessToken) override;
+  // Endpoint for gRPC service
   grpc::Status Login(grpc::ServerContext* context, const auth::Credentials* request, auth::AccessToken* response) override;
-
+  bool verify(std::string accessToken) override;
 
 private:
   std::vector<std::string> m_tokens;
